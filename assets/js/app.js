@@ -12,6 +12,7 @@ import '../css/app.css';
 // import $ from 'jquery';
 
 import {BrowserMultiFormatReader, NotFoundException} from "@zxing/library";
+import $ from "jquery";
 
 window.addEventListener('load', function () {
     let selectedDeviceId;
@@ -42,6 +43,19 @@ window.addEventListener('load', function () {
                     if (result) {
                         console.log(result)
                         document.getElementById('result').textContent = result.text
+                        document.getElementById('codigo').setAttribute('',result.text)
+
+
+                        $.get("/getProductByCode/"+ result.text, function (data){
+                            var html = "";
+
+
+                                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description ;
+
+
+                            $("#displayProduct").html(html);
+                        })
+
                     }
                     if (err && !(err instanceof NotFoundException)) {
                         console.error(err)
@@ -61,5 +75,47 @@ window.addEventListener('load', function () {
         .catch((err) => {
             console.error(err)
         })
+    document.getElementById('certo').addEventListener('click', () => {
+        //mudar para a funcao codeindb true
+        document.getElementById('prodlabel').style="display: block";
+        document.getElementById('displayProduct').style="display: block";
+        document.getElementById('casefalse').style="display: none";
+        document.getElementById('Cadastrar').style="display: none";
+    })
+    document.getElementById('errado').addEventListener('click', () => {
+        //mudar para a funcao codeindb false
+        document.getElementById('casefalse').style="display: block";
+        document.getElementById('prodlabel').style="display: none";
+        document.getElementById('displayProduct').style="display: none";
+    })
+    document.getElementById('add').addEventListener('click', () => {
+        document.getElementById('Cadastrar').style="display: block";
+        document.getElementById('casefalse').style="display: none";
+    })
+
+
+
+
+    $("#Cadastrar").submit(function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        var form = new FormData();
+
+        $(this).find("input").each(function(){
+            form.append($(this).attr('name'), $(this).val());
+        })
+
+        $.ajax({
+            url: "/registerProduct",
+            contentType: false,
+            processData: false,
+            data: form,
+            type: 'post',
+            success: function (data) {
+                alert("enviado");
+            }
+        });
+        
+    })
 })
 

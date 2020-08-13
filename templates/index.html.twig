@@ -27,6 +27,8 @@
         <div>
             <a class="button" id="startButton">Start</a>
             <a class="button" id="resetButton">Reset</a>
+            <a class="button" id="test">Teste</a>
+            <input type="text" id="codetest">
         </div>
 
         <div>
@@ -60,11 +62,28 @@
             <label>nome: </label>
             <input name="nome">
             <label>codigo:</label>
-            <input name="codigo">
+            <input name="codigo" id="code">
             <label>descricao:</label>
             <input name="descricao">
             <button type="submit">Salvar</button>
         </form>
+        <form id="upload" method="post">
+            <input type="file" name="image" value="select file" id="file">
+            <button type="submit">enviar</button>
+        </form>
+        <div>
+        <form id="review" method="post" style="display: none">
+
+            <label>username</label>
+            <input type="text" name="username" style="border: solid #8959A8 1px">
+            <label>nota</label>
+            <input type="number" name="score" min="1" max="5" style="width: 50px">
+            <label>review</label>
+            <input type="textarea" name="text" style="width: 50%">
+            <button type="submit">miau eh isso ae</button>
+
+        </form>
+        </div>
 
         
     </section>

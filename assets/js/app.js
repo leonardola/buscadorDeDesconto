@@ -15,6 +15,7 @@ import {BrowserMultiFormatReader, NotFoundException} from "@zxing/library";
 import $ from "jquery";
 
 window.addEventListener('load', function () {
+    let idProduct;
     let selectedDeviceId;
     const codeReader = new BrowserMultiFormatReader()
     console.log('ZXing code reader initialized')
@@ -43,14 +44,16 @@ window.addEventListener('load', function () {
                     if (result) {
                         console.log(result)
                         document.getElementById('result').textContent = result.text
-                        document.getElementById('codigo').setAttribute('',result.text)
+                        document.getElementById('code').value = result.text
 
-
-                        $.get("/getProductByCode/"+ result.text, function (data){
+                        $.get("/getProductByCode/"+ result.text, function (data,datareview){
                             var html = "";
 
-
-                                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description ;
+                            idProduct= data.id;
+                                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description +"<br>";
+                            for (var i=0;i<=data["reviews"].length;i++){
+                                html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>";
+                            }
 
 
                             $("#displayProduct").html(html);
@@ -62,8 +65,33 @@ window.addEventListener('load', function () {
                         document.getElementById('result').textContent = err
                     }
                 })
-                console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+                console.log(`Started continuous decode from camera with id ${selectedDeviceId}`)
             })
+
+
+
+            document.getElementById('test').addEventListener('click', () => {
+                document.getElementById('code').value = document.getElementById('codetest').value
+                var codetest = document.getElementById('codetest').value
+                console.log(codetest);
+                $.get("/getProductByCode/"+ codetest , function (data,datareview){
+                var html = "";
+
+                idProduct= data.id;
+                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description +"<br>";
+                for (var i=0;i<=data["reviews"].length;i++){
+                    if (!data.reviews.hasOwnProperty(i)){
+                        continue;
+                    }
+                    html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>";
+                }
+
+
+                $("#displayProduct").html(html);
+            })
+            })
+
+
 
             document.getElementById('resetButton').addEventListener('click', () => {
                 codeReader.reset()
@@ -81,6 +109,7 @@ window.addEventListener('load', function () {
         document.getElementById('displayProduct').style="display: block";
         document.getElementById('casefalse').style="display: none";
         document.getElementById('Cadastrar').style="display: none";
+        document.getElementById('review').style="display: block";
     })
     document.getElementById('errado').addEventListener('click', () => {
         //mudar para a funcao codeindb false
@@ -96,14 +125,18 @@ window.addEventListener('load', function () {
 
 
 
+
     $("#Cadastrar").submit(function (e){
         e.preventDefault();
         e.stopPropagation();
+        document.getElementById('review').style="display: block";
         var form = new FormData();
 
         $(this).find("input").each(function(){
             form.append($(this).attr('name'), $(this).val());
         })
+
+
 
         $.ajax({
             url: "/registerProduct",
@@ -115,7 +148,52 @@ window.addEventListener('load', function () {
                 alert("enviado");
             }
         });
+
         
+    })
+
+    $("#upload").submit(function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        var fd = new FormData();
+        var files = $('#file')[0].files[0];
+        fd.append('file',files);
+
+        $.ajax({
+            url: '/uploadImage',
+            type: 'post',
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: function(response){
+                if(response != 0){
+                    $("#img").attr("src",response);
+                    $(".preview img").show(); // Display image element
+                }else{
+                    alert('file not uploaded');
+                }
+            },
+        })
+    })
+    $("#review").submit(function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        var form = new FormData();
+
+        $(this).find("input").each(function(){
+            form.append($(this).attr('name'), $(this).val());
+        })
+
+        $.ajax({
+            url: "/registerReview/"+ idProduct,
+            contentType: false,
+            processData: false,
+            data: form,
+            type: 'post',
+            success: function (data) {
+                alert("enviado");
+            }
+        });
     })
 })
 

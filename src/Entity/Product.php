@@ -22,9 +22,9 @@ class Product
     private $id;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="code", type="integer", nullable=false)
+     * @ORM\Column(name="code", type="string", length=15, nullable=false)
      */
     private $code;
 
@@ -47,12 +47,12 @@ class Product
         return $this->id;
     }
 
-    public function getCode(): ?int
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
-    public function setCode(int $code): self
+    public function setCode(string $code): self
     {
         $this->code = $code;
 

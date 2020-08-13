@@ -29,7 +29,7 @@ class IndexController extends AbstractController
      */
     public function index()
     {
-        return $this->render('index.html.twig');            
+        return $this->render('index.html.twig');
     }
 
     /**
@@ -65,7 +65,7 @@ class IndexController extends AbstractController
                 ];
             }
     	}
-		 
+
 
     	return $this->json($data);
     }
@@ -81,8 +81,7 @@ class IndexController extends AbstractController
         $product
             ->setCode($data['codigo'])
             ->setDescription($data['descricao'])
-            ->setName($data['nome'])
-            ->set($data['image']) ;
+            ->setName($data['nome']);
 
         $em->persist($product);
         $this->em->flush();
@@ -137,13 +136,15 @@ class IndexController extends AbstractController
             echo 0;
         }else{
             /* Upload file */
-            if(copy($_FILES['file']['tmp_name'],$location)){
+            if(move_uploaded_file($_FILES['file']['tmp_name'],$location)){
                 echo $location;
             }else{
                 echo 0;
             }
 
         }
+
+        return $this->json([]);
 
     }
 }

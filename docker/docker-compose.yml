@@ -10,9 +10,6 @@ services:
           - "443:443"
         volumes:
           - ../:/var/www/html/:delegated
-          - ../../Imovago/:/var/www/imovago/:delegated
-          - ../../Imovago/crm/uploads/:/var/www/html/public/uploads/:delegated
-          - ../cache/:/var/www/html/cache/:delegated
     node-barcode:
       image: "node:12"
       command: "yarn encore dev --watch --watch-poll"

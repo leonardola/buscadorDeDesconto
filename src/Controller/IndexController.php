@@ -49,6 +49,7 @@ class IndexController extends AbstractController
 	    		'name' => $product->getName(),
 	    		'description' => $product->getDescription(),
 	    		'code' => $product->getCode(),
+                'image'=>$product->getImage(),
                 'reviews'=>[]
     		];
     		foreach ($reviews as $review){
@@ -57,11 +58,12 @@ class IndexController extends AbstractController
                 $datetime = $date->format('d/m/Y');
 
     		    $data['reviews'][] = [
-                    'id'=> $review->getId(),
+                    'id'=> $review->getReviewid(),
                     'username' => $review->getUsername(),
                     'dateTime' => $datetime,
                     'score' => $review->getScore(),
-                    'review' => $review->getReview()
+                    'review' => $review->getReview(),
+                    'price' => $review->getPrice()
                 ];
             }
     	}
@@ -76,15 +78,22 @@ class IndexController extends AbstractController
     {
         $data = $request->request->all();
         //criar cadastro no banco usando o doctrine
+        $filename = $_FILES['file']['name'];
+        $location = $this->publicDir."/uploads/".$filename;
+        $path = "/uploads/".$filename;
         $em = $this->getDoctrine()->getManager();
         $product = new Product();
         $product
             ->setCode($data['codigo'])
             ->setDescription($data['descricao'])
-            ->setName($data['nome']);
-
+            ->setName($data['nome'])
+            ->setImage($path);
         $em->persist($product);
         $this->em->flush();
+
+            if(move_uploaded_file($_FILES['file']['tmp_name'],$location)){
+                echo $location;
+            }
 
         return $this->json([]);
     }
@@ -97,6 +106,7 @@ class IndexController extends AbstractController
 
         $product = $this->em->getRepository(\App\Entity\Product::class)->find($productId);
         $data = $request->request->all();
+
         //criar cadastro no banco usando o doctrine
         $em = $this->getDoctrine()->getManager();
         $review = new Review();
@@ -105,47 +115,14 @@ class IndexController extends AbstractController
             ->setScore($data['score'])
             ->setReview($data['text'])
             ->setDate(new \DateTime())
-            ->setProduct($product);
+            ->setProduct($product)
+            ->setPrice($data['price']);
 
         $em->persist($review);
         $this->em->flush();
 
-        return $this->json([]);
-    }
-    /**
-     * @Route("/uploadImage")
-     */
-    public function uploadImage(){
-
-        /* Getting file name */
-        $filename = $_FILES['file']['name'];
-
-        /* Location */
-        $location = $this->publicDir."/uploads/".$filename;
-        $uploadOk = 1;
-        $imageFileType = pathinfo($location,PATHINFO_EXTENSION);
-
-        /* Valid Extensions */
-        $valid_extensions = array("jpg","jpeg","png");
-        /* Check file extension */
-        if( !in_array(strtolower($imageFileType),$valid_extensions) ) {
-            $uploadOk = 0;
-        }
-
-        if($uploadOk == 0){
-            echo 0;
-        }else{
-            /* Upload file */
-            if(move_uploaded_file($_FILES['file']['tmp_name'],$location)){
-                echo $location;
-            }else{
-                echo 0;
-            }
-
-        }
 
         return $this->json([]);
-
     }
 }
 

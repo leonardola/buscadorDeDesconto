@@ -73,17 +73,18 @@ window.addEventListener('load', function () {
             document.getElementById('test').addEventListener('click', () => {
                 document.getElementById('code').value = document.getElementById('codetest').value
                 var codetest = document.getElementById('codetest').value
-                console.log(codetest);
                 $.get("/getProductByCode/"+ codetest , function (data,datareview){
                 var html = "";
 
                 idProduct= data.id;
-                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description +"<br>";
-                for (var i=0;i<=data["reviews"].length;i++){
+
+                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description +"<br>" +"foto: "+"<img src='"+data.image+"' id='prodimg'>"+"<br>";
+                    console.log(data.image);
+                    for (var i=0;i<=data["reviews"].length;i++){
                     if (!data.reviews.hasOwnProperty(i)){
                         continue;
                     }
-                    html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>";
+                    html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>"+ data.reviews[i].price +"<br>";
                 }
 
 
@@ -131,10 +132,12 @@ window.addEventListener('load', function () {
         e.stopPropagation();
         document.getElementById('review').style="display: block";
         var form = new FormData();
+        var files = $('#file')[0].files[0];
 
         $(this).find("input").each(function(){
             form.append($(this).attr('name'), $(this).val());
         })
+        form.append('file',files);
 
 
 
@@ -152,29 +155,6 @@ window.addEventListener('load', function () {
         
     })
 
-    $("#upload").submit(function (e){
-        e.preventDefault();
-        e.stopPropagation();
-        var fd = new FormData();
-        var files = $('#file')[0].files[0];
-        fd.append('file',files);
-
-        $.ajax({
-            url: '/uploadImage',
-            type: 'post',
-            data: fd,
-            contentType: false,
-            processData: false,
-            success: function(response){
-                if(response != 0){
-                    $("#img").attr("src",response);
-                    $(".preview img").show(); // Display image element
-                }else{
-                    alert('file not uploaded');
-                }
-            },
-        })
-    })
     $("#review").submit(function (e){
         e.preventDefault();
         e.stopPropagation();

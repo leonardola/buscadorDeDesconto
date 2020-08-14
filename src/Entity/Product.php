@@ -42,6 +42,13 @@ class Product
      */
     private $name;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="image", type="string", length=45, nullable=true)
+     */
+    private $image;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,6 +86,18 @@ class Product
     public function setName(?string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

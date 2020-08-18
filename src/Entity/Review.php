@@ -57,6 +57,13 @@ class Review
     private $price;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="store", type="string", length=300, nullable=false)
+     */
+    private $store;
+
+    /**
      * @var \Product
      *
      * @ORM\ManyToOne(targetEntity="Product")
@@ -127,6 +134,18 @@ class Review
     public function setPrice(?string $price): self
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getStore(): ?string
+    {
+        return $this->store;
+    }
+
+    public function setStore(string $store): self
+    {
+        $this->store = $store;
 
         return $this;
     }

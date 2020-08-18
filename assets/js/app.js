@@ -1,22 +1,16 @@
-/*
- * Welcome to your app's main JavaScript file!
- *
- * We recommend including the built version of this JavaScript file
- * (and its CSS file) in your base layout (base.html.twig).
- */
-
-// any CSS you import will output into a single css file (app.css in this case)
 import '../css/app.css';
-
-// Need jQuery? Install it with "yarn add jquery", then uncomment to import it.
-// import $ from 'jquery';
-
 import {BrowserMultiFormatReader, NotFoundException} from "@zxing/library";
 import $ from "jquery";
 
 window.addEventListener('load', function () {
     let idProduct;
     let selectedDeviceId;
+    let sum = 0;
+    let scoresum = 0;
+    let countreviews = 0;
+
+    $('.productscreen').hide();
+    $('.scannerscreen').hide();
     const codeReader = new BrowserMultiFormatReader()
     console.log('ZXing code reader initialized')
     codeReader.listVideoInputDevices()
@@ -50,13 +44,16 @@ window.addEventListener('load', function () {
                             var html = "";
 
                             idProduct= data.id;
-                                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description +"<br>";
+                            html +=  "<p style='text-align: center'>"+data.name+"</p>" +"<br>" +"<img src='"+data.image+"' id='prodimg'>"+"<br>" + "<p style='text-align: center'>"+data.description+"</p>";
                             for (var i=0;i<=data["reviews"].length;i++){
                                 html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>";
                             }
 
 
                             $("#displayProduct").html(html);
+                            $('.firstscreen').hide();
+                            $('.productscreen').show();
+                            $('.scannerscreen').hide();
                         })
 
                     }
@@ -78,17 +75,22 @@ window.addEventListener('load', function () {
 
                 idProduct= data.id;
 
-                html +=  "id: "+data.id+"<br>"+" codigo: "+ data.code+"<br>" + " nome: " + data.name+"<br>" + " descricao: " + data.description +"<br>" +"foto: "+"<img src='"+data.image+"' id='prodimg'>"+"<br>";
-                    console.log(data.image);
-                    for (var i=0;i<=data["reviews"].length;i++){
+                    html +=  "<p style='text-align: center'>"+data.name+"</p>" +"<br>" +"<img src='"+data.image+"' id='prodimg'>"+"<br>" + "<p style='text-align: center'>"+data.description+"</p>" + "<p id='priceavg'>"+ +"</p>" + "<p id='scoreavg'>"+ +"</p>" +"<br>";
+                    countreviews=data["reviews"].length;
+                    for (var i=0;i<=countreviews;i++){
                     if (!data.reviews.hasOwnProperty(i)){
                         continue;
                     }
-                    html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>"+ data.reviews[i].price +"<br>";
-                }
+                    html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>"+" R$"+ data.reviews[i].price +"<br>";
+                    sum+= parseInt(data.reviews[i].price.replace(".",""))/100;
+                    scoresum+=parseInt(parseInt(data.reviews[i].score));
+                    }
 
 
                 $("#displayProduct").html(html);
+                    $('.firstscreen').hide();
+                    $('.productscreen').show();
+                    $('.scannerscreen').hide();
             })
             })
 
@@ -106,23 +108,37 @@ window.addEventListener('load', function () {
         })
     document.getElementById('certo').addEventListener('click', () => {
         //mudar para a funcao codeindb true
-        document.getElementById('prodlabel').style="display: block";
         document.getElementById('displayProduct').style="display: block";
         document.getElementById('casefalse').style="display: none";
         document.getElementById('Cadastrar').style="display: none";
         document.getElementById('review').style="display: block";
+        document.getElementById('priceavg').innerHTML =sum/countreviews;
+        document.getElementById('scoreavg').innerHTML =scoresum/countreviews;
     })
     document.getElementById('errado').addEventListener('click', () => {
         //mudar para a funcao codeindb false
         document.getElementById('casefalse').style="display: block";
-        document.getElementById('prodlabel').style="display: none";
         document.getElementById('displayProduct').style="display: none";
     })
     document.getElementById('add').addEventListener('click', () => {
         document.getElementById('Cadastrar').style="display: block";
         document.getElementById('casefalse').style="display: none";
     })
-
+    $('.barcode').on('click', function (){
+        $('.firstscreen').slideUp();
+        $('.productscreen').slideUp();
+        $('.scannerscreen').slideDown();
+    })
+    $('.back').on('click', function (){
+        $('.firstscreen').slideDown();
+        $('.productscreen').slideUp();
+        $('.scannerscreen').slideUp();
+    })
+    $('.pricetag').on('click', function (){
+        $('.firstscreen').slideDown();
+        $('.productscreen').slideUp();
+        $('.scannerscreen').slideUp();
+    })
 
 
 

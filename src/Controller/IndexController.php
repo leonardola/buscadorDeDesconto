@@ -116,7 +116,8 @@ class IndexController extends AbstractController
             ->setReview($data['text'])
             ->setDate(new \DateTime())
             ->setProduct($product)
-            ->setPrice($data['price']);
+            ->setPrice($data['price'])
+            ->setStore($data['store']);
 
         $em->persist($review);
         $this->em->flush();

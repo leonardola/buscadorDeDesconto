@@ -8,52 +8,66 @@ window.addEventListener('load', function () {
     let sum = 0;
     let scoresum = 0;
     let countreviews = 0;
+    function codeindb(){
+
+        document.getElementById('displayProduct').style="display: block";
+        document.getElementById('casefalse').style="display: none";
+        document.getElementById('Cadastrar').style="display: none";
+        document.getElementById('review').style="display: block";
+
+
+    }
+    function codenotindb(){
+        document.getElementById('casefalse').style="display: block";
+        document.getElementById('displayProduct').style="display: none";
+        document.getElementById('review').style="display: none";
+    }
 
     $('.productscreen').hide();
     $('.scannerscreen').hide();
     const codeReader = new BrowserMultiFormatReader()
-    console.log('ZXing code reader initialized')
     codeReader.listVideoInputDevices()
         .then((videoInputDevices) => {
-            const sourceSelect = document.getElementById('sourceSelect')
-            selectedDeviceId = videoInputDevices[0].deviceId
-            if (videoInputDevices.length >= 1) {
-                videoInputDevices.forEach((element) => {
-                    const sourceOption = document.createElement('option')
-                    sourceOption.text = element.label
-                    sourceOption.value = element.deviceId
-                    sourceSelect.appendChild(sourceOption)
-                })
+            const cam = videoInputDevices.length -1;
+            selectedDeviceId = videoInputDevices[cam].deviceId
 
-                sourceSelect.onchange = () => {
-                    selectedDeviceId = sourceSelect.value;
-                };
-
-                const sourceSelectPanel = document.getElementById('sourceSelectPanel')
-                sourceSelectPanel.style.display = 'block'
-            }
-
-            document.getElementById('startButton').addEventListener('click', () => {
+            $('.barcode').on('click', function (){
+                codenotindb();
+                codeReader.reset()
+                document.getElementById('result').textContent = '';
                 codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                     if (result) {
-                        console.log(result)
                         document.getElementById('result').textContent = result.text
                         document.getElementById('code').value = result.text
 
                         $.get("/getProductByCode/"+ result.text, function (data,datareview){
                             var html = "";
+                            console.log("aaaaaaa");
 
                             idProduct= data.id;
-                            html +=  "<p style='text-align: center'>"+data.name+"</p>" +"<br>" +"<img src='"+data.image+"' id='prodimg'>"+"<br>" + "<p style='text-align: center'>"+data.description+"</p>";
-                            for (var i=0;i<=data["reviews"].length;i++){
-                                html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>";
+
+                            html +=  "<p style='text-align: center'>"+data.name+"</p>" +"<br>" +"<img src='"+data.image+"' id='prodimg'>"+"<br>" + "<p style='text-align: center'>"+data.description+"</p>" +"<br>";
+                            if(!data) {
+                                countreviews=data["reviews"].length;
+
+                                for (var i=0;i<=countreviews;i++){
+                                    if (!data.reviews.hasOwnProperty(i)){
+                                        continue;
+                                    }
+                                    html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>"+" R$"+ data.reviews[i].price +"<br>";
+                                }}
+
+                            if (html.search("undefined")==-1){
+                                codeindb();
+                            }else {
+                                console.log("jjoj")
+                                codenotindb();
                             }
 
-
                             $("#displayProduct").html(html);
-                            $('.firstscreen').hide();
-                            $('.productscreen').show();
-                            $('.scannerscreen').hide();
+                            $('.firstscreen').slideUp();
+                            $('.productscreen').slideDown();
+                            $('.scannerscreen').slideUp();
                         })
 
                     }
@@ -65,61 +79,14 @@ window.addEventListener('load', function () {
                 console.log(`Started continuous decode from camera with id ${selectedDeviceId}`)
             })
 
-
-
-            document.getElementById('test').addEventListener('click', () => {
-                document.getElementById('code').value = document.getElementById('codetest').value
-                var codetest = document.getElementById('codetest').value
-                $.get("/getProductByCode/"+ codetest , function (data,datareview){
-                var html = "";
-
-                idProduct= data.id;
-
-                    html +=  "<p style='text-align: center'>"+data.name+"</p>" +"<br>" +"<img src='"+data.image+"' id='prodimg'>"+"<br>" + "<p style='text-align: center'>"+data.description+"</p>" + "<p id='priceavg'>"+ +"</p>" + "<p id='scoreavg'>"+ +"</p>" +"<br>";
-                    countreviews=data["reviews"].length;
-                    for (var i=0;i<=countreviews;i++){
-                    if (!data.reviews.hasOwnProperty(i)){
-                        continue;
-                    }
-                    html +=  " usuario: "+ data.reviews[i].username+"<br>" + " data: " + data.reviews[i].dateTime+"<br>" + " review: " + data.reviews[i].review +"<br>"+ data.reviews[i].score +"<br>"+" R$"+ data.reviews[i].price +"<br>";
-                    sum+= parseInt(data.reviews[i].price.replace(".",""))/100;
-                    scoresum+=parseInt(parseInt(data.reviews[i].score));
-                    }
-
-
-                $("#displayProduct").html(html);
-                    $('.firstscreen').hide();
-                    $('.productscreen').show();
-                    $('.scannerscreen').hide();
-            })
-            })
-
-
-
-            document.getElementById('resetButton').addEventListener('click', () => {
-                codeReader.reset()
-                document.getElementById('result').textContent = '';
-                console.log('Reset.')
-            })
-
         })
         .catch((err) => {
             console.error(err)
         })
-    document.getElementById('certo').addEventListener('click', () => {
-        //mudar para a funcao codeindb true
-        document.getElementById('displayProduct').style="display: block";
-        document.getElementById('casefalse').style="display: none";
-        document.getElementById('Cadastrar').style="display: none";
-        document.getElementById('review').style="display: block";
-        document.getElementById('priceavg').innerHTML =sum/countreviews;
-        document.getElementById('scoreavg').innerHTML =scoresum/countreviews;
-    })
-    document.getElementById('errado').addEventListener('click', () => {
-        //mudar para a funcao codeindb false
-        document.getElementById('casefalse').style="display: block";
-        document.getElementById('displayProduct').style="display: none";
-    })
+
+
+
+
     document.getElementById('add').addEventListener('click', () => {
         document.getElementById('Cadastrar').style="display: block";
         document.getElementById('casefalse').style="display: none";

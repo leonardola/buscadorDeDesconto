@@ -40,21 +40,9 @@
 
 <section class="scannerscreen">
     <button class="back btn btn-light"><i class="fas fa-long-arrow-alt-left" style="font-size:2.3em; width: 1.5em; padding: 0.3em 0;"></i></button>
-    <div>
-        <a class="button btn btn-light" id="startButton">Start</a>
-        <a class="button btn btn-light" id="resetButton">Reset</a>
-        <a class="button btn btn-light" id="test">Teste</a>
-        <input type="text" id="codetest">
-    </div>
 
     <div>
         <video id="video" width="300" height="200" style="border: 1px solid gray"></video>
-    </div>
-
-    <div id="sourceSelectPanel" style="display:none">
-        <label for="sourceSelect">Change video source:</label>
-        <select id="sourceSelect" style="max-width:400px">
-        </select>
     </div>
     <label>Result:</label>
     <pre><code id="result"></code></pre>
@@ -69,13 +57,9 @@
 <section class="productscreen">
     <div class="top flex">
         <button class="barcode btn btn-light"><i class="fas fa-barcode" style="font-size:2.3em; width: 1.5em; padding: 0.3em 0;"></i></button>
-        <button class="pricetag btn btn-light"><i class="fas fa-tag" style="font-size:2.3em; width: 1.5em; padding: 0.3em 0;margin-left: 50vw"></i></button>
+        <button class="pricetag btn btn-light"><i class="fas fa-tag" style="font-size:2.3em; width: 1.5em; padding: 0.3em 0;padding-left: 50vw"></i></button>
     </div>
 
-
-
-    <button id="errado" class="btn btn-secondary">codigo inexistente</button>
-    <button id="certo" class="btn btn-secondary">codigo existente</button>
 
     <div id="displayProduct" style="display: none; justify-content: center">
     </div>

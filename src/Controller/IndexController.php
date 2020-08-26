@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Entity\Review;
+use App\Entity\Sale;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,26 @@ class IndexController extends AbstractController
     public function index()
     {
         return $this->render('index.html.twig');
+    }
+    /**
+     * @Route("/getsales")
+     */
+
+    public function getsales()
+    {
+        $product = $this->em->getRepository(\App\Entity\Product::class)->findBy(['onSale'=> 1]);
+       $data=[];
+        foreach ($product as $product){
+            if($product) {
+            $data [] = [
+                'image'=> $product->getImage(),
+                'description'=> $product->getDescription(),
+                'name' => $product->getName(),
+                'code' => $product->getCode()
+            ];
+        }
+        }
+        return $this->json($data);
     }
 
     /**
@@ -58,7 +79,7 @@ class IndexController extends AbstractController
                 $datetime = $date->format('d/m/Y');
 
     		    $data['reviews'][] = [
-                    'id'=> $review->getReviewid(),
+                    'id'=> $review->getId(),
                     'username' => $review->getUsername(),
                     'dateTime' => $datetime,
                     'score' => $review->getScore(),
@@ -117,7 +138,7 @@ class IndexController extends AbstractController
             ->setDate(new \DateTime())
             ->setProduct($product)
             ->setPrice($data['price'])
-            ->setStore($data['store']);
+            ->setMarket($data['market']);
 
         $em->persist($review);
         $this->em->flush();
@@ -125,6 +146,7 @@ class IndexController extends AbstractController
 
         return $this->json([]);
     }
+
 }
 
 

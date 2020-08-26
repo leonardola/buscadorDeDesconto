@@ -1,12 +1,12 @@
 import '../css/app.css';
 import {BrowserMultiFormatReader, NotFoundException} from "@zxing/library";
 import $ from "jquery";
+$('.productscreen').hide();
+$('.scannerscreen').hide();
 
 window.addEventListener('load', function () {
     let idProduct;
     let selectedDeviceId;
-    let sum = 0;
-    let scoresum = 0;
     let countreviews = 0;
     function codeindb(){
 
@@ -23,8 +23,22 @@ window.addEventListener('load', function () {
         document.getElementById('review').style="display: none";
     }
 
-    $('.productscreen').hide();
-    $('.scannerscreen').hide();
+    function offers(){
+
+        $.get("/getsales", function (data){
+            var html = "" ;
+            var i;
+
+            for (i=0;i<data.length;i++){
+                html +=  "<p style='text-align: center'>"+data[i].name+"</p>" +"<br>" +"<img src='"+data[i].image+"' id='prodimage'>"+"<br>" + "<p style='text-align: center'>"+data[i].description+"</p>" +"<br>";
+
+            }
+            $("#displaySales").html(html);
+        })
+
+    }
+    offers();
+
     const codeReader = new BrowserMultiFormatReader()
     codeReader.listVideoInputDevices()
         .then((videoInputDevices) => {
@@ -32,7 +46,6 @@ window.addEventListener('load', function () {
             selectedDeviceId = videoInputDevices[cam].deviceId
 
             $('.barcode').on('click', function (){
-                codenotindb();
                 codeReader.reset()
                 document.getElementById('result').textContent = '';
                 codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
@@ -42,12 +55,12 @@ window.addEventListener('load', function () {
 
                         $.get("/getProductByCode/"+ result.text, function (data,datareview){
                             var html = "";
-                            console.log("aaaaaaa");
+                            console.log(data)
 
                             idProduct= data.id;
 
                             html +=  "<p style='text-align: center'>"+data.name+"</p>" +"<br>" +"<img src='"+data.image+"' id='prodimg'>"+"<br>" + "<p style='text-align: center'>"+data.description+"</p>" +"<br>";
-                            if(!data) {
+                            if(html.search("undefined")==-1) {
                                 countreviews=data["reviews"].length;
 
                                 for (var i=0;i<=countreviews;i++){
@@ -60,7 +73,6 @@ window.addEventListener('load', function () {
                             if (html.search("undefined")==-1){
                                 codeindb();
                             }else {
-                                console.log("jjoj")
                                 codenotindb();
                             }
 

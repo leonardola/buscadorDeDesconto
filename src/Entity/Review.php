@@ -15,11 +15,11 @@ class Review
     /**
      * @var int
      *
-     * @ORM\Column(name="reviewId", type="integer", nullable=false, options={"unsigned"=true})
+     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned"=true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $reviewid;
+    private $id;
 
     /**
      * @var string
@@ -59,9 +59,9 @@ class Review
     /**
      * @var string
      *
-     * @ORM\Column(name="store", type="string", length=300, nullable=false)
+     * @ORM\Column(name="market", type="string", length=300, nullable=false)
      */
-    private $store;
+    private $market;
 
     /**
      * @var \Product
@@ -73,9 +73,9 @@ class Review
      */
     private $product;
 
-    public function getReviewid(): ?int
+    public function getId(): ?int
     {
-        return $this->reviewid;
+        return $this->id;
     }
 
     public function getReview(): ?string
@@ -138,14 +138,14 @@ class Review
         return $this;
     }
 
-    public function getStore(): ?string
+    public function getMarket(): ?string
     {
-        return $this->store;
+        return $this->market;
     }
 
-    public function setStore(string $store): self
+    public function setMarket(string $market): self
     {
-        $this->store = $store;
+        $this->market = $market;
 
         return $this;
     }

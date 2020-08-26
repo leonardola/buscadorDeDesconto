@@ -49,6 +49,13 @@ class Product
      */
     private $image;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="on_sale", type="boolean", nullable=false)
+     */
+    private $onSale = '0';
+
     public function getId(): ?int
     {
         return $this->id;
@@ -98,6 +105,18 @@ class Product
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getOnSale(): ?bool
+    {
+        return $this->onSale;
+    }
+
+    public function setOnSale(bool $onSale): self
+    {
+        $this->onSale = $onSale;
 
         return $this;
     }
